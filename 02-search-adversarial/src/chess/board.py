@@ -94,4 +94,13 @@ class Board:
             piece = elem[1]  # kod figure
             if piece == 'p':
                 return Pawn(self, row, col, side)
-            # TODO: dodati za ostale figure
+            if piece == 'n':
+                return Knight(self, row, col, side)
+            if piece == 'k':
+                return King(self, row, col, side)
+            if piece == 'r':
+                return Rook(self, row, col, side)
+            if piece == 'b':
+                return Bishop(self, row, col, side)
+            if piece == 'q':
+                return Queen(self, row, col, side)
