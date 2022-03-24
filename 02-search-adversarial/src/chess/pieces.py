@@ -65,7 +65,7 @@ class Pawn(Piece):
                 d_rows.append(-1)
                 d_cols.append(1)
             # en-pasant
-            if last_move is not None:
+            if last_move:
                 last = last_move[-1]
                 if last[0] == 'bp' and last[1] == 1 and last[3] == 3:
                     if row == 3:
@@ -156,13 +156,13 @@ class Knight(Piece):
                 d_cols.append(-2)
 
             # dole desno
-            if col > 0 and row < self.board.rows - 1 and not self.board.data[row + 2][col - 1].startswith('w'):
-                d_rows.append(2)
-                d_cols.append(-1)
-            # dole levo
-            if col < self.board.cols - 1 and row < self.board.rows - 1 and not self.board.data[row + 2][col + 1].startswith('w'):
+            if col < self.board.cols - 1 and row < self.board.rows - 2 and not self.board.data[row + 2][col + 1].startswith('w'):
                 d_rows.append(2)
                 d_cols.append(1)
+            # dole levo
+            if col > 0 and row < self.board.rows - 2 and not self.board.data[row + 2][col - 1].startswith('w'):
+                d_rows.append(2)
+                d_cols.append(-1)
 
         else:  # crni konj
             # gore desno
@@ -193,13 +193,13 @@ class Knight(Piece):
                 d_cols.append(-2)
 
             # dole desno
-            if col > 0 and row < self.board.rows - 1 and not self.board.data[row + 2][col - 1].startswith('b'):
-                d_rows.append(2)
-                d_cols.append(-1)
-            # dole levo
-            if col < self.board.cols - 1 and row < self.board.rows - 1 and not self.board.data[row + 2][col + 1].startswith('b'):
+            if col < self.board.cols - 1 and row < self.board.rows - 2 and not self.board.data[row + 2][col + 1].startswith('b'):
                 d_rows.append(2)
                 d_cols.append(1)
+            # dole levo
+            if col > 0 and row < self.board.rows - 2 and not self.board.data[row + 2][col - 1].startswith('b'):
+                d_rows.append(2)
+                d_cols.append(-1)
         for d_row, d_col in zip(d_rows, d_cols):
             new_row = row + d_row
             new_col = col + d_col
@@ -632,8 +632,7 @@ class King(Piece):
 
                     if not moved:
                         # check if spaces inbetween are free
-                        if self.board.data[0][3] == '.' and self.board.data[0][2] == '.' and self.board.data[0][
-                            1] == '.':
+                        if self.board.data[0][3] == '.' and self.board.data[0][2] == '.' and self.board.data[0][1] == '.':
                             d_rows.append(0)
                             d_cols.append(-2)
                     # right rook

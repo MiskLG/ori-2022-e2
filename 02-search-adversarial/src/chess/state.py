@@ -7,14 +7,19 @@ class State(object):
     Klasa koja opisuje stanje table.
     """
 
-    def __init__(self, board, parent=None):
+    def __init__(self, board, parent=None, history_moves = []):
         """
         :param board: Board (tabla)
         :param parent: roditeljsko stanje
         :return:
         """
+        self.history_moves = []
+        self.pos = None
         self.board = board  # sahovska tabla koja opisuje trenutno stanje
         self.parent = parent  # roditeljsko stanje
+        if parent is not None:
+            self.history_moves = parent.history_moves
+            self.history_moves.append(parent.pos)
         self.value = 0.  # "vrednost" stanja - racuna ga evaluaciona funkcija calculate_value()
 
     def generate_next_states(self, max_player):
@@ -23,6 +28,7 @@ class State(object):
         :param max_player: bool. Da li je MAX igrac (crni)?
         :return: list. Lista mogucih sledecih stanja.
         """
+
         next_states = []
         for row in range(self.board.rows):
             for col in range(self.board.cols):
@@ -31,11 +37,13 @@ class State(object):
                     continue
                 # generisi za crne ako je max igrac na potezu, generisi za bele ako je min igrac na potezu
                 if (max_player and piece.side == 'b') or (not max_player and piece.side == 'w'):
-                    legal_moves = piece.get_legal_moves()  # svi moguci potezi za figuru
+                    legal_moves = piece.get_legal_moves(self.history_moves)  # svi moguci potezi za figuru
                     for legal_move in legal_moves:
                         new_board = copy.deepcopy(self.board)
-                        new_board.move_piece(row, col, legal_move[0], legal_move[1])
-                        next_state = State(new_board, self)
+                        self.pos = new_board.move_piece(row, col, legal_move[0], legal_move[1])
+                        next_state = State(new_board, self, self.history_moves)
+
+
                         next_states.append(next_state)
         random.shuffle(next_states)
         return next_states
@@ -45,5 +53,13 @@ class State(object):
         Evaluaciona funkcija za stanje.
         :return:
         """
-        # TODO 3: Implementirati jednostavnu evaluacionu funkciju (suma vrednosti svih figura na tabli)
+        for row in range(0, self.board.rows):
+            for col in range(0, self.board.cols):
+                piece = self.board.determine_piece(row, col)
+                if piece is not None:
+                    self.value += piece.get_value_()
+        print(self.value)
         return self.value
+
+    def is_final_state(self):
+        return False
