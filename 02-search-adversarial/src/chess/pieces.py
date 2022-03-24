@@ -12,7 +12,7 @@ class Piece(object):
         self.side = side
 
     @abstractmethod
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         """
         Apstraktna metoda koja treba da za konkretnu figuru vrati moguce sledece poteze (pozicije).
         """
@@ -39,7 +39,7 @@ class Pawn(Piece):
     Pijun
     """
 
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side
@@ -64,6 +64,17 @@ class Pawn(Piece):
             if col < self.board.cols - 1 and row > 0 and self.board.data[row-1][col+1].startswith('b'):
                 d_rows.append(-1)
                 d_cols.append(1)
+            # en-pasant
+            if last_move is not None:
+                last = last_move[-1]
+                if last[0] == 'bp' and last[1] == 1 and last[3] == 3:
+                    if row == 3:
+                        if last[2] == col + 1:
+                            d_rows.append(-1)
+                            d_cols.append(1)
+                        elif last[2] == col - 1:
+                            d_rows.append(-1)
+                            d_cols.append(-1)
         else:  # crni pijun
             if row < self.board.rows - 1 and self.board.data[row + 1][col] == '.':
                 d_rows.append(1)
@@ -97,7 +108,7 @@ class Knight(Piece):
     """
     Konj
     """
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side
@@ -195,7 +206,7 @@ class Bishop(Piece):
     """
     Lovac
     """
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side
@@ -266,7 +277,7 @@ class Rook(Piece):
     """
     Top
     """
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side
@@ -339,7 +350,7 @@ class Queen(Piece):
     """
     Kraljica
     """
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side
@@ -456,7 +467,7 @@ class King(Piece):
     Kralj
     """
 
-    def get_legal_moves(self):
+    def get_legal_moves(self, last_move):
         row = self.row
         col = self.col
         side = self.side

@@ -38,10 +38,11 @@ def reset():
 selected = None
 moves = None
 start, end = time.perf_counter(), None
+history_moves = []
 
 
 def move_piece(event, row=None, col=None):
-    global selected, moves, board, history, start, end
+    global selected, moves, board, history, start, end, last_move
     if row is None and col is None:
         cx = event.x
         cy = event.y
@@ -57,7 +58,10 @@ def move_piece(event, row=None, col=None):
                 return
             selected = row, col
             # generate legal moves
-            moves = piece.get_legal_moves()
+            if history_moves:
+                moves = piece.get_legal_moves(history_moves)
+            else:
+                moves = piece.get_legal_moves(None)
             for move in moves:
                 update_board(move[0], move[1])
             update_board(row, col)
@@ -74,7 +78,14 @@ def move_piece(event, row=None, col=None):
 
         if from_row != row or from_col != col:
             history.append(copy.deepcopy(board))
-            board.move_piece(from_row, from_col, row, col)
+            history_moves.append(board.move_piece(from_row, from_col, row, col))
+
+        # update for en-passant
+        if history_moves:
+            if history_moves[-1][5] == 1:
+                update_board(row + 1, col)
+            elif history_moves[-1][5] == 2:
+                update_board(row - 1, col)
 
         update_board(from_row, from_col)
         update_board(row, col)
@@ -177,6 +188,7 @@ def undo():
     if len(history) > 1:
         board = history[-1]
         history = history[0:-1]
+        history_moves.pop()
         display_board()
 
 #  main program #

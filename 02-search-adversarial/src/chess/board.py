@@ -56,10 +56,21 @@ class Board:
         :param to_row: novi red figure.
         :param to_col: nova kolona figure.
         """
+        # checking if its en-pasant from white
+        if from_row == 3 and to_row == 2:
+            if self.data[to_row][to_col] == '.':
+                if self.data[from_row][from_col][1] == 'p':
+                    t = self.data[from_row][from_col]
+                    self.data[from_row][from_col] = '.'
+                    self.data[to_row][to_col] = t
+                    self.data[to_row+1][to_col] = '.'
+                    return t, from_row, from_col, to_row, to_col, 1
+
         if to_row < len(self.data) and to_col < len(self.data[0]):
             t = self.data[from_row][from_col]
             self.data[from_row][from_col] = '.'
             self.data[to_row][to_col] = t
+            return t, from_row, from_col, to_row, to_col, -1
 
     def clear(self):
         """
