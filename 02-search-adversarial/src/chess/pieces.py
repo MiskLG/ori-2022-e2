@@ -91,6 +91,16 @@ class Pawn(Piece):
             if col < self.board.cols - 1 and row < self.board.rows - 1 and self.board.data[row + 1][col + 1].startswith('w'):
                 d_rows.append(1)
                 d_cols.append(1)
+            if last_move is not None:
+                last = last_move[-1]
+                if last[0] == 'wp' and last[1] == 6 and last[3] == 4:
+                    if row == 4:
+                        if last[2] == col + 1:
+                            d_rows.append(1)
+                            d_cols.append(1)
+                        elif last[2] == col - 1:
+                            d_rows.append(1)
+                            d_cols.append(-1)
 
         for d_row, d_col in zip(d_rows, d_cols):
             new_row = row + d_row
@@ -477,6 +487,7 @@ class King(Piece):
 
         fails = [0, 0, 0, 0]
         fails_b = [0, 0, 0, 0]
+        # copyied form queen and made only it check only 1 space
         for current in range(1, 2):
 
             # gore
@@ -567,6 +578,82 @@ class King(Piece):
                     fails_b[3] = 1
                 else:
                     fails_b[3] = 1
+        # castle check
+        # check position king
+        if side == 'w':
+            # bazna pozicija
+            if col == 4 and row == 7:
+                #check rooks
+                #left rook
+                if self.board.data[7][0] == 'wr':
+                    #check if he was moved
+                    moved = False
+                    if last_move is not None:
+                        for move in last_move:
+                            if (move[0] == 'wr' and move[1] == 7 and move [2] == 0) or (move[0] == 'wk' and move[1] == 7 and move[2] == 4):
+                                moved = True
+                                break;
+
+                    if not moved:
+                        # check if spaces inbetween are free
+                        if self.board.data[7][3] == '.' and self.board.data[7][2] == '.' and self.board.data[7][1] == '.':
+                            d_rows.append(0)
+                            d_cols.append(-2)
+                    # right rook
+                    if self.board.data[7][7] == 'wr':
+                        # check if he was moved
+                        moved = False
+                        if last_move is not None:
+                            for move in last_move:
+                                print(move)
+                                if (move[0] == 'wr' and move[1] == 7 and move [2] == 7) or (move[0] == 'wk' and move[1] == 7 and move[2] == 4):
+                                    moved = True
+                                    break;
+
+                        if not moved:
+                            # check if spaces inbetween are free
+                            if self.board.data[7][5] == '.' and self.board.data[7][6] == '.':
+                                d_rows.append(0)
+                                d_cols.append(2)
+        else:
+            # bazna pozicija
+            if col == 4 and row == 0:
+                # check rooks
+                # left rook
+                if self.board.data[0][0] == 'br':
+                    # check if he was moved
+                    moved = False
+                    if last_move is not None:
+                        for move in last_move:
+                            if (move[0] == 'br' and move[1] == 0 and move[2] == 0) or (
+                                    move[0] == 'bk' and move[1] == 0 and move[2] == 4):
+                                moved = True
+                                break;
+
+                    if not moved:
+                        # check if spaces inbetween are free
+                        if self.board.data[0][3] == '.' and self.board.data[0][2] == '.' and self.board.data[0][
+                            1] == '.':
+                            d_rows.append(0)
+                            d_cols.append(-2)
+                    # right rook
+                    if self.board.data[0][7] == 'br':
+                        # check if he was moved
+                        moved = False
+                        if last_move is not None:
+                            for move in last_move:
+                                print(move)
+                                if (move[0] == 'br' and move[1] == 0 and move[2] == 7) or (
+                                        move[0] == 'bk' and move[1] == 0 and move[2] == 4):
+                                    moved = True
+                                    break;
+
+                        if not moved:
+                            # check if spaces inbetween are free
+                            if self.board.data[0][5] == '.' and self.board.data[0][6] == '.':
+                                d_rows.append(0)
+                                d_cols.append(2)
+
         for d_row, d_col in zip(d_rows, d_cols):
             new_row = row + d_row
             new_col = col + d_col

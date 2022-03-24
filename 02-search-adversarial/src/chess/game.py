@@ -86,6 +86,12 @@ def move_piece(event, row=None, col=None):
                 update_board(row + 1, col)
             elif history_moves[-1][5] == 2:
                 update_board(row - 1, col)
+            elif history_moves[-1][5] == 3:
+                update_board(from_row, 0)
+                update_board(from_row, 3)
+            elif history_moves[-1][5] == 4:
+                update_board(from_row, 7)
+                update_board(from_row, 5)
 
         update_board(from_row, from_col)
         update_board(row, col)

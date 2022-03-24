@@ -66,6 +66,35 @@ class Board:
                     self.data[to_row+1][to_col] = '.'
                     return t, from_row, from_col, to_row, to_col, 1
 
+        if from_row == 4 and to_row == 5:
+            if self.data[to_row][to_col] == '.':
+                if self.data[from_row][from_col][1] == 'p':
+                    t = self.data[from_row][from_col]
+                    self.data[from_row][from_col] = '.'
+                    self.data[to_row][to_col] = t
+                    self.data[to_row-1][to_col] = '.'
+                    return t, from_row, from_col, to_row, to_col, 2
+
+        # checking if castle was made from white
+        if (from_row == 7 or from_row == 0) and (to_row == 7 or to_row == 0) and from_col == 4:
+            if self.data[from_row][from_col][1] == 'k':
+                color = self.data[from_row][from_col][0]
+                # to the left
+                if to_col == 2:
+                    t = self.data[from_row][from_col]
+                    self.data[from_row][from_col] = '.'
+                    self.data[to_row][to_col] = t
+                    self.data[from_row][0] = '.'
+                    self.data[from_row][3] = color + 'r'
+                    return t, from_row, from_col, to_row, to_col, 3
+                elif to_col == 6:
+                    t = self.data[from_row][from_col]
+                    self.data[from_row][from_col] = '.'
+                    self.data[to_row][to_col] = t
+                    self.data[from_row][7] = '.'
+                    self.data[from_row][5] = color + 'r'
+                    return t, from_row, from_col, to_row, to_col, 4
+
         if to_row < len(self.data) and to_col < len(self.data[0]):
             t = self.data[from_row][from_col]
             self.data[from_row][from_col] = '.'
