@@ -41,8 +41,9 @@ start, end = time.perf_counter(), None
 history_moves = []
 
 
+
 def move_piece(event, row=None, col=None):
-    global selected, moves, board, history, start, end, last_move
+    global selected, moves, board, history, start, end, last_state, history_moves
     if row is None and col is None:
         cx = event.x
         cy = event.y
@@ -93,8 +94,11 @@ def move_piece(event, row=None, col=None):
                 update_board(from_row, 7)
                 update_board(from_row, 5)
 
+
         update_board(from_row, from_col)
         update_board(row, col)
+
+        last_state = State(board, history_moves, last_state)
 
         end = time.perf_counter()
         duration = end - start
@@ -105,8 +109,10 @@ def move_piece(event, row=None, col=None):
         # --------------------------------
         if from_row != row or from_col != col:
             start = time.perf_counter()
-            search = Minimax(board, 3)  # ovde promeniti koji se algoritam koristi i koja je dubina pretrage
+            search = Minimax(board, 1, last_state)  # ovde promeniti koji se algoritam koristi i koja je dubina pretrage
             _, next_state = search.perform_adversarial_search()  # izvrsi pretragu
+            last_state = next_state
+            history_moves = last_state.history_moves
             end = time.perf_counter()
             duration = end - start
             print('--- {0} was thinking for {1} seconds ---'.format('Black', duration))
@@ -203,6 +209,7 @@ cols = 8  # broj kolona table
 cell_size = 80  # velicina celije
 
 board = Board(rows=rows, cols=cols)
+last_state = State(board, history_moves, parent=None)
 
 history = [copy.deepcopy(board)]
 

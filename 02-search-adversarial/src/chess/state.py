@@ -7,19 +7,19 @@ class State(object):
     Klasa koja opisuje stanje table.
     """
 
-    def __init__(self, board, parent=None, history_moves = []):
+    def __init__(self, board, history_moves, parent=None):
         """
         :param board: Board (tabla)
         :param parent: roditeljsko stanje
         :return:
         """
-        self.history_moves = []
+        self.history_moves = history_moves
         self.pos = None
         self.board = board  # sahovska tabla koja opisuje trenutno stanje
         self.parent = parent  # roditeljsko stanje
         if parent is not None:
-            self.history_moves = parent.history_moves
-            self.history_moves.append(parent.pos)
+            if parent.pos is not None:
+                self.history_moves.append(parent.pos)
         self.value = 0.  # "vrednost" stanja - racuna ga evaluaciona funkcija calculate_value()
 
     def generate_next_states(self, max_player):
@@ -28,7 +28,6 @@ class State(object):
         :param max_player: bool. Da li je MAX igrac (crni)?
         :return: list. Lista mogucih sledecih stanja.
         """
-
         next_states = []
         for row in range(self.board.rows):
             for col in range(self.board.cols):
@@ -41,9 +40,7 @@ class State(object):
                     for legal_move in legal_moves:
                         new_board = copy.deepcopy(self.board)
                         self.pos = new_board.move_piece(row, col, legal_move[0], legal_move[1])
-                        next_state = State(new_board, self, self.history_moves)
-
-
+                        next_state = State(new_board, copy.deepcopy(self.history_moves), self)
                         next_states.append(next_state)
         random.shuffle(next_states)
         return next_states

@@ -12,13 +12,13 @@ class AdversarialSearch(object):
     Apstraktna klasa za suparnicku/protivnicku pretragu.
     """
 
-    def __init__(self, board, max_depth):
+    def __init__(self, board, max_depth, last_state):
         """
         :param board: tabla koja predstavlja pocetno stanje.
         :param max_depth: maksimalna dubina pretrage (koliko poteza unapred).
         :return:
         """
-        self.initial_state = State(board, parent=None)
+        self.initial_state = last_state
         self.max_depth = max_depth
 
     @abstractmethod
@@ -58,7 +58,34 @@ class Minimax(AdversarialSearch):
 
 
 class AlphaBeta(AdversarialSearch):
+    def alphabet(self, state, depth, alpha, beta, maximizing_player):
+        if depth == 0 or state.is_final_state():
+            return state.calculate_value_based_on_color(maximizing_player), state
+
+        if maximizing_player:
+            best_value = -np.inf
+            best_state = state
+            for child in state.generate_next_states(not maximizing_player):
+                value, _ = self.alphabet(child, depth - 1, alpha, beta, False)
+                alpha = max(alpha, value)
+                if value > best_value:
+                    best_value = value
+                    best_state = child
+                    if beta <= alpha:
+                        break
+            return best_value, best_state
+        else:
+            best_value = np.inf
+            best_state = state
+            for child in state.generate_next_states(not maximizing_player):
+                value, st = self.alphabet(child, depth - 1, alpha, beta, True)
+                if value < best_value:
+                    best_value = value
+                    best_state = child
+                    beta = min(beta, value)
+                    if beta <= alpha:
+                        break
+            return best_value, best_state
 
     def perform_adversarial_search(self):
-        # TODO 4: Implementirati alpha-beta algoritam
-        pass
+        return self.alphabet(self.initial_state, self.max_depth, -np.inf, np.inf, False)
