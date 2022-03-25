@@ -352,7 +352,6 @@ class Rook(Piece):
         return legal_moves
 
     def get_value_(self):
-        # TODO
         return 5 # top vrednost 5
 
 
@@ -605,7 +604,6 @@ class King(Piece):
                         moved = False
                         if last_move is not None:
                             for move in last_move:
-                                print(move)
                                 if (move[0] == 'wr' and move[1] == 7 and move [2] == 7) or (move[0] == 'wk' and move[1] == 7 and move[2] == 4):
                                     moved = True
                                     break;
@@ -641,7 +639,6 @@ class King(Piece):
                         moved = False
                         if last_move is not None:
                             for move in last_move:
-                                print(move)
                                 if (move[0] == 'br' and move[1] == 0 and move[2] == 7) or (
                                         move[0] == 'bk' and move[1] == 0 and move[2] == 4):
                                     moved = True

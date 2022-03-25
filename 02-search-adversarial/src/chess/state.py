@@ -58,8 +58,31 @@ class State(object):
                 piece = self.board.determine_piece(row, col)
                 if piece is not None:
                     self.value += piece.get_value_()
-        print(self.value)
+        return self.value
+
+    def calculate_value_based_on_color(self, black):
+        for row in range(0, self.board.rows):
+            for col in range(0, self.board.cols):
+                piece = self.board.determine_piece(row, col)
+                if piece is not None:
+                    if black:
+                        if piece.side == 'w':
+                            self.value += piece.get_value_()
+                    else:
+                        if piece.side == 'b':
+                            self.value += piece.get_value_()
         return self.value
 
     def is_final_state(self):
-        return False
+        white_lost = True
+        black_lost = True
+        for row in range(0, self.board.rows):
+            for col in range(0, self.board.cols):
+                piece = self.board.determine_piece(row, col)
+                if piece is not None:
+                    if piece.side == 'w' and piece.get_value_() == 1000:
+                        white_lost = False
+                    if piece.side == 'b' and piece.get_value_() == 1000:
+                        black_lost = False
+
+        return white_lost + black_lost

@@ -32,19 +32,19 @@ class AdversarialSearch(object):
 class Minimax(AdversarialSearch):
     def minmax(self, state, depth, maximizing_player):
         if depth == 0 or state.is_final_state():
-            return state.calculate_value(), state
+            return state.calculate_value_based_on_color(maximizing_player), state
 
         if maximizing_player:
-            best_value = -np.inf # privremeno - beskonacno
+            best_value = -np.inf
             best_state = state
             for child in state.generate_next_states(not maximizing_player):
-                value, st = self.minmax(child, depth - 1, False)
+                value, _ = self.minmax(child, depth - 1, False)
                 if value > best_value:
                     best_value = value
                     best_state = child
             return best_value, best_state
         else:
-            best_value = np.inf # privremeno
+            best_value = np.inf
             best_state = state
             for child in state.generate_next_states(not maximizing_player):
                 value, st = self.minmax(child, depth - 1, True)
