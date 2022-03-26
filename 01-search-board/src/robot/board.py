@@ -15,7 +15,8 @@ class Board:
         self.elems = ['.',
                       'w',
                       'r',
-                      'g']
+                      'g',
+                      'b']
         self.data = [['.'] * cols for _ in range(rows)]
         self.text = [[''] * cols for _ in range(rows)]
 
@@ -63,6 +64,18 @@ class Board:
             for col in range(self.cols):
                 self.data[row][col] = '.'
                 self.text[row][col] = ''
+
+    def find_number_of_boxes(self):
+        """
+        Trazi broj kutija na tabli
+        """
+        boxes = 0
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.data[row][col] == 'b':
+                    boxes += 1
+
+        return boxes
 
     def find_position(self, element):
         """

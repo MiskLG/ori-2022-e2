@@ -7,7 +7,7 @@ class State(object):
     """
 
     @abstractmethod
-    def __init__(self, board, parent=None, position=None, goal_position=None):
+    def __init__(self, board, parent=None, position=None, goal_position=None, eatenBoxes=[]):
         """
         :param board: Board (tabla)
         :param parent: roditeljsko stanje
@@ -16,13 +16,19 @@ class State(object):
         :return:
         """
         self.board = board
+        self.currentBoxes = 0
+
         self.parent = parent  # roditeljsko stanje
         if self.parent is None:  # ako nema roditeljsko stanje, onda je ovo inicijalno stanje
             self.position = board.find_position(self.get_agent_code())  # pronadji pocetnu poziciju
             self.goal_position = board.find_position(self.get_agent_goal_code())  # pronadji krajnju poziciju
+            self.currentBoxes = 0
+            self.eatenBoxes = []
         else:  # ako ima roditeljsko stanje, samo sacuvaj vrednosti parametara
             self.position = position
             self.goal_position = goal_position
+            self.currentBoxes = self.parent.currentBoxes
+            self.eatenBoxes = self.parent.eatenBoxes
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage
 
     def get_next_states(self):
@@ -74,7 +80,7 @@ class State(object):
         :return: str
         """
         pass
-    
+
     @abstractmethod
     def get_cost(self):
         """
@@ -84,7 +90,7 @@ class State(object):
         :return: float
         """
         pass
-    
+
     @abstractmethod
     def get_current_cost(self):
         """
@@ -96,10 +102,9 @@ class State(object):
 
 
 class RobotState(State):
-    def __init__(self, board, parent=None, position=None, goal_position=None):
-        super(self.__class__, self).__init__(board, parent, position, goal_position)
+    def __init__(self, board, parent=None, position=None, goal_position=None, eatenBoxes=[]):
+        super(self.__class__, self).__init__(board, parent, position, goal_position, eatenBoxes)
         # posle pozivanja super konstruktora, mogu se dodavati "custom" stvari vezani za stanje
-        # TODO 6: prosiriti stanje sa informacijom da li je robot pokupio kutiju
 
     def get_agent_code(self):
         return 'r'
@@ -121,10 +126,24 @@ class RobotState(State):
             # ako nova pozicija nije van table i ako nije zid ('w'), ubaci u listu legalnih pozicija
             if 0 <= new_row < self.board.rows and 0 <= new_col < self.board.cols and self.board.data[new_row][new_col] != 'w':
                 new_positions.append((new_row, new_col))
+
         return new_positions
 
     def is_final_state(self):
-        return self.position == self.goal_position
+
+        ind = 0
+        if self.board.data[self.position[0]][self.position[1]] == 'b':
+            ind1 = 0
+            for eaten in self.eatenBoxes:
+                if eaten[0] == self.position[0] and eaten[1] == self.position[1]:
+                    ind1 = 1
+                    break
+            if ind1 == 0:
+                ind = 1
+                self.currentBoxes += 1
+                self.eatenBoxes.append([self.position[0], self.position[1]])
+        print(str(self.currentBoxes) + " " + str(self.board.find_number_of_boxes()))
+        return self.position == self.goal_position and self.currentBoxes >= self.board.find_number_of_boxes(), ind
 
     def unique_hash(self):
-        return str(self.position)
+        return str(self.position)  # +"/"+str(self.depth)
