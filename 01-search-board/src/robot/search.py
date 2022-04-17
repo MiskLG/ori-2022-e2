@@ -32,8 +32,7 @@ class Search(object):
             curr_state = self.select_state(states_list)  # preuzmi sledece stanje za obradu
             states_set.remove(curr_state.unique_hash())  # izbaci stanja iz seta stanja
 
-            processed_list.append(curr_state)  # ubaci stanje u listu procesiranih stanja
-            processed_set.add(curr_state.unique_hash())  # ubaci stanje u set procesiranih stanja
+
 
             kraj, refresh = curr_state.is_final_state()
             if kraj:  # ako je krajnje stanje
@@ -42,9 +41,11 @@ class Search(object):
             if refresh == 1:
                 processed_set = set()
                 states_set = set()
-                states_list = deque([curr_state])
+                states_list = deque([])
                 processed_list = deque([])
-                states_set.add(curr_state.unique_hash())
+
+            processed_list.append(curr_state)  # ubaci stanje u listu procesiranih stanja
+            processed_set.add(curr_state.unique_hash())  # ubaci stanje u set procesiranih stanja
             # ako nije krajnje stanje
             # izgenerisi sledeca moguca stanja
             new_states = curr_state.get_next_states()

@@ -170,7 +170,7 @@ def do_search():
     global processed, path
     reset()
     # koju strategiju pretrage koristiti
-    search = DepthFirstSearch(board)
+    search = BreadthFirstSearch(board)
     # kog "agenta" koristiti
     initial_state = RobotState
 
@@ -242,7 +242,8 @@ grid_text_ids = [[[]] * cols for _ in range(rows)]
 board_to_colors = {'.': 'white',
                    'w': 'gray',
                    'g': 'orangered',
-                   'b': 'blue'}
+                   'bb': 'blue',
+                   'ob': 'orange'}
 # mapiranje sadrzaja table na ikonicu
 board_to_icons = {'r': 'robot.png'}
 

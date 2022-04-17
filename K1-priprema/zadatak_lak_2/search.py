@@ -32,17 +32,14 @@ class Search(object):
             curr_state = self.select_state(states_list)  # preuzmi sledece stanje za obradu
             states_set.remove(curr_state.unique_hash())  # izbaci stanja iz seta stanja
 
-
-
-            box, end = curr_state.is_final_state()
+            refresh, end = curr_state.is_final_state()
             if end:  # ako je krajnje stanje
                 # rekonsturisi putanju
                 return Search.reconstruct_path(curr_state), processed_list, states_list
-            elif box:
+            elif refresh:
                 processed_set = set()
                 states_set = set()
-                states_list = deque()
-                processed_list = deque([])
+                states_list = deque([])
 
             processed_list.append(curr_state)  # ubaci stanje u listu procesiranih stanja
             processed_set.add(curr_state.unique_hash())  # ubaci stanje u set procesiranih stanja
@@ -54,6 +51,7 @@ class Search(object):
             new_states = [new_state for new_state in new_states if
                           new_state.unique_hash() not in processed_set and
                           new_state.unique_hash() not in states_set]
+
             # dodaj sledeca moguca stanja na kraj liste stanja
             states_list.extend(new_states)
             # dodaj sledeca moguca stanja u set stanja
@@ -90,7 +88,7 @@ class BreadthFirstSearch(Search):
 
 class DepthFirstSearch(Search):
     def select_state(self, states):
-        return states.pop();
+        return states.pop()
 
 
 class IterativeDepthFirstSearch(Search):
