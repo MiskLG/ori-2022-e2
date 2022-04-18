@@ -1,5 +1,5 @@
 ## Zadatak1 - lak
-#### Robot: doći od starta do cilja, uz prvobitno kupljenje jedne plave kutije. Kada robot pokupi kutiju može da se kreće i dijagonalno.
+#### Robot: doći od starta do cilja, uz prvobitno kupljenje jedne plave kutije pa onda narandzaste
 ## Steps:
 * Dodati nove elemente u board, moze biti bilo sta sta vec nema (~18lc u board.py)
 * Dodati boje elementima (~245lc u game.py)
