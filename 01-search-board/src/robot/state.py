@@ -28,7 +28,7 @@ class State(object):
             self.position = position
             self.goal_position = goal_position
             self.currentBoxes = self.parent.currentBoxes
-            self.eatenBoxes = self.parent.eatenBoxes
+            self.eatenBoxes = self.parent.eatenBoxes.copy()
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage
 
     def get_next_states(self):

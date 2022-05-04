@@ -27,7 +27,7 @@ class State(object):
         else:  # ako ima roditeljsko stanje, samo sacuvaj vrednosti parametara
             self.blue_box = parent.blue_box
             self.orange_box = parent.orange_box
-            self.eaten_boxes = parent.eaten_boxes
+            self.eaten_boxes = parent.eaten_boxes.copy()
             self.position = position
             self.goal_position = goal_position
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage

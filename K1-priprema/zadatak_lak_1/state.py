@@ -25,7 +25,7 @@ class State(object):
         else:  # ako ima roditeljsko stanje, samo sacuvaj vrednosti parametara
             self.position = position
             self.goal_position = goal_position
-            self.eaten_boxes = parent.eaten_boxes
+            self.eaten_boxes = parent.eaten_boxes.copy()
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage
 
     def get_next_states(self):
