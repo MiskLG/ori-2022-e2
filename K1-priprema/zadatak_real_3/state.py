@@ -21,15 +21,19 @@ class State(object):
         self.eaten_boxes = []
         self.points = 0
         self.lost_points = 0
+        self.all_boxes = 0
         if self.parent is None:  # ako nema roditeljsko stanje, onda je ovo inicijalno stanje
             self.position = board.find_position(self.get_agent_code())  # pronadji pocetnu poziciju
             self.goal_position = board.find_position(self.get_agent_goal_code())  # pronadji krajnju poziciju
+            self.all_boxes, self.all_boxes_checked = self.find_all_boxes(['l', 'og'])
         else:  # ako ima roditeljsko stanje, samo sacuvaj vrednosti parametara
             self.position = position
             self.goal_position = goal_position
             self.points = parent.points
             self.lost_points = parent.lost_points
             self.eaten_boxes = parent.eaten_boxes.copy()
+            self.all_boxes = parent.all_boxes.copy()
+            self.all_boxes_checked = parent.all_boxes_checked.copy()
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage
 
     def get_next_states(self):
@@ -108,7 +112,7 @@ class RobotState(State):
         row, col = self.position
         self.refresh = False
 
-        if (self.board.data[row][col] == 'l' or self.board.data[row][col] == 'og'):
+        if self.board.data[row][col] == 'l' or self.board.data[row][col] == 'og':
             if self.lost_points < 3 and self.points < 3:
                 leave = False
                 for box in self.eaten_boxes:
@@ -117,16 +121,25 @@ class RobotState(State):
                         leave = True
                 if not leave:
                     if self.board.data[row][col] == 'l':
+                        index = self.all_boxes.index([row, col])
+                        self.all_boxes_checked[index] = 1
                         self.points += 1
                     else:
                         if np.random.random(1) < 0.75:
                             if np.random.random(1) < .5:
                                 print("Challenge lost")
                                 self.lost_points += 1
+                                index = self.all_boxes.index([row, col])
+                                self.all_boxes_checked[index] = 2
                             else:
                                 print("Challenge won")
+                                index = self.all_boxes.index([row, col])
+                                self.all_boxes_checked[index] = 1
                                 self.points += 1
-                        self.points += 1
+                        else:
+                            index = self.all_boxes.index([row, col])
+                            self.all_boxes_checked[index] = 1
+                            self.points += 1
                     self.eaten_boxes.append([row, col])
                     self.refresh = True
             elif self.points >= 3 or self.lost_points >= 3:
@@ -138,16 +151,26 @@ class RobotState(State):
                             leave = True
                     if not leave:
                         if self.board.data[row][col] == 'l':
+                            index = self.all_boxes.index([row, col])
+                            self.all_boxes_checked[index] = 1
                             self.points += 1
                         else:
                             if np.random.random(1) < 0.75:
                                 if np.random.random(1) < .5:
                                     print("Challenge lost")
                                     self.lost_points += 1
+                                    index = self.all_boxes.index([row, col])
+                                    self.all_boxes_checked[index] = 2
                                 else:
                                     print("Challenge won")
                                     self.points += 1
-                            self.points += 1
+                                    index = self.all_boxes.index([row, col])
+                                    self.all_boxes_checked[index] = 1
+                            else:
+                                self.points += 1
+                                index = self.all_boxes.index([row, col])
+                                self.all_boxes_checked[index] = 1
+
                         self.eaten_boxes.append([row, col])
                         self.refresh = True
 
@@ -199,6 +222,25 @@ class RobotState(State):
     def print_ending(self):
         return ("Pobeda" + str(self.points) + "/" + str(self.lost_points)) if self.points > self.lost_points else (
                     "Gubitak" + str(self.points) + "/" + str(self.lost_points))
+
+    def unique_hash_2(self):
+        return str(self.position) + str(self.all_boxes_checked)
+
+    def find_all_boxes(self, boxes):
+        """
+            boxes parameter takes all points of interest as an array. Ex. ['bb', 'ob']
+        """
+        all_boxes = []
+        checked_boxes = []
+
+        for rows in range(0,self.board.rows):
+            for cols in range(0,self.board.cols):
+                tile = self.board.data[rows][cols]
+                if tile in boxes:
+                    all_boxes.append([rows,cols])
+                    checked_boxes.append(0)
+
+        return all_boxes, checked_boxes
 
     def get_legal_moves_vertical(self, board, current_position, good_characters, ending_characters, start, finish,
                                  sides):
