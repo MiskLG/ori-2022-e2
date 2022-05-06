@@ -22,7 +22,7 @@ class State(object):
         self.points = 0
         self.lost_points = 0
         self.all_boxes = 0
-        self.idk = 0
+        self.idk = 1
         if self.parent is None:  # ako nema roditeljsko stanje, onda je ovo inicijalno stanje
             self.position = board.find_position(self.get_agent_code())  # pronadji pocetnu poziciju
             self.goal_position = board.find_position(self.get_agent_goal_code())  # pronadji krajnju poziciju
