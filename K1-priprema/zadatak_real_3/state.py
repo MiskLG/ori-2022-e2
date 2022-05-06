@@ -22,6 +22,7 @@ class State(object):
         self.points = 0
         self.lost_points = 0
         self.all_boxes = 0
+        self.idk = 0
         if self.parent is None:  # ako nema roditeljsko stanje, onda je ovo inicijalno stanje
             self.position = board.find_position(self.get_agent_code())  # pronadji pocetnu poziciju
             self.goal_position = board.find_position(self.get_agent_goal_code())  # pronadji krajnju poziciju
@@ -34,6 +35,7 @@ class State(object):
             self.eaten_boxes = parent.eaten_boxes.copy()
             self.all_boxes = parent.all_boxes.copy()
             self.all_boxes_checked = parent.all_boxes_checked.copy()
+            self.idk = parent.idk
         self.depth = parent.depth + 1 if parent is not None else 1  # povecaj dubinu/nivo pretrage
 
     def get_next_states(self):
@@ -112,38 +114,9 @@ class RobotState(State):
         row, col = self.position
         self.refresh = False
 
-        if self.board.data[row][col] == 'l' or self.board.data[row][col] == 'og':
-            if self.lost_points < 3 and self.points < 3:
-                leave = False
-                for box in self.eaten_boxes:
-                    box_row, box_col = box
-                    if box_row == row and box_col == col:
-                        leave = True
-                if not leave:
-                    if self.board.data[row][col] == 'l':
-                        index = self.all_boxes.index([row, col])
-                        self.all_boxes_checked[index] = 1
-                        self.points += 1
-                    else:
-                        if np.random.random(1) < 0.75:
-                            if np.random.random(1) < .5:
-                                print("Challenge lost")
-                                self.lost_points += 1
-                                index = self.all_boxes.index([row, col])
-                                self.all_boxes_checked[index] = 2
-                            else:
-                                print("Challenge won")
-                                index = self.all_boxes.index([row, col])
-                                self.all_boxes_checked[index] = 1
-                                self.points += 1
-                        else:
-                            index = self.all_boxes.index([row, col])
-                            self.all_boxes_checked[index] = 1
-                            self.points += 1
-                    self.eaten_boxes.append([row, col])
-                    self.refresh = True
-            elif self.points >= 3 or self.lost_points >= 3:
-                if np.abs(self.lost_points - self.points) != 2:
+        if not self.game_finished():
+            if self.board.data[row][col] == 'l' or self.board.data[row][col] == 'og':
+                if self.lost_points < 3 and self.points < 3:
                     leave = False
                     for box in self.eaten_boxes:
                         box_row, box_col = box
@@ -152,7 +125,8 @@ class RobotState(State):
                     if not leave:
                         if self.board.data[row][col] == 'l':
                             index = self.all_boxes.index([row, col])
-                            self.all_boxes_checked[index] = 1
+                            self.all_boxes_checked[index] = self.idk
+                            self.idk += 1
                             self.points += 1
                         else:
                             if np.random.random(1) < 0.75:
@@ -160,19 +134,56 @@ class RobotState(State):
                                     print("Challenge lost")
                                     self.lost_points += 1
                                     index = self.all_boxes.index([row, col])
-                                    self.all_boxes_checked[index] = 2
+                                    self.all_boxes_checked[index] = self.idk
+                                    self.idk += 1
                                 else:
                                     print("Challenge won")
-                                    self.points += 1
                                     index = self.all_boxes.index([row, col])
-                                    self.all_boxes_checked[index] = 1
+                                    self.all_boxes_checked[index] = self.idk
+                                    self.idk += 1
+                                    self.points += 1
                             else:
-                                self.points += 1
                                 index = self.all_boxes.index([row, col])
-                                self.all_boxes_checked[index] = 1
-
+                                self.all_boxes_checked[index] = self.idk
+                                self.idk += 1
+                                self.points += 1
                         self.eaten_boxes.append([row, col])
                         self.refresh = True
+                elif self.points >= 3 or self.lost_points >= 3:
+                    if np.abs(self.lost_points - self.points) != 2:
+                        leave = False
+                        for box in self.eaten_boxes:
+                            box_row, box_col = box
+                            if box_row == row and box_col == col:
+                                leave = True
+                        if not leave:
+                            if self.board.data[row][col] == 'l':
+                                index = self.all_boxes.index([row, col])
+                                self.all_boxes_checked[index] = self.idk
+                                self.idk += 1
+                                self.points += 1
+                            else:
+                                if np.random.random(1) < 0.75:
+                                    if np.random.random(1) < .5:
+                                        print("Challenge lost")
+                                        self.lost_points += 1
+                                        index = self.all_boxes.index([row, col])
+                                        self.all_boxes_checked[index] = self.idk
+                                        self.idk += 1
+                                    else:
+                                        print("Challenge won")
+                                        self.points += 1
+                                        index = self.all_boxes.index([row, col])
+                                        self.all_boxes_checked[index] = self.idk
+                                        self.idk += 1
+                                else:
+                                    self.points += 1
+                                    index = self.all_boxes.index([row, col])
+                                    self.all_boxes_checked[index] = self.idk
+                                    self.idk += 1
+
+                            self.eaten_boxes.append([row, col])
+                            self.refresh = True
 
     def get_agent_code(self):
         return 'r'

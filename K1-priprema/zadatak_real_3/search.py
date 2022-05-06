@@ -21,7 +21,7 @@ class Search(object):
         """
         # inicijalizacija pretrage
         # solution to use, solution 1 is better imo
-        solution = 2
+        solution = 1
         initial_state = initial_state(self.board)  # pocetno stanje
         states_list = deque([initial_state])  # deque - "brza" lista u Python-u
         if solution == 1:
