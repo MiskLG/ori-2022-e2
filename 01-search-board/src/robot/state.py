@@ -145,5 +145,11 @@ class RobotState(State):
         print(str(self.currentBoxes) + " " + str(self.board.find_number_of_boxes()))
         return self.position == self.goal_position and self.currentBoxes >= self.board.find_number_of_boxes(), ind
 
+    def get_cost(self):
+        return ((self.position[0] - self.goal_position[0])**2 + (self.position[1] - self.goal_position[1])**2)**0.5
+
+    def get_current_cost(self):
+        return self.depth
+
     def unique_hash(self):
         return str(self.position)  # +"/"+str(self.depth)
