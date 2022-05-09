@@ -13,6 +13,9 @@ class Board:
         # g = robot's goal
         # ----------------
         self.elems = ['.',
+                      'b',
+                      'y',
+                      'br',
                       'w',
                       'r',
                       'g']

@@ -241,7 +241,10 @@ grid_text_ids = [[[]] * cols for _ in range(rows)]
 # mapiranje sadrzaja table na boju celije
 board_to_colors = {'.': 'white',
                    'w': 'gray',
-                   'g': 'orangered'}
+                   'g': 'orangered',
+                   'b': 'blue',
+                   'y': 'yellow',
+                   'br': 'brown'}
 # mapiranje sadrzaja table na ikonicu
 board_to_icons = {'r': 'robot.png'}
 
