@@ -8,7 +8,7 @@ def load_data():
     X = []
     y = []
 
-    with open('../data/customer_churn.csv', 'r') as file:
+    with open('../../data/customer_churn.csv', 'r') as file:
         for line in file:
             data = line.split(',')
             try:
